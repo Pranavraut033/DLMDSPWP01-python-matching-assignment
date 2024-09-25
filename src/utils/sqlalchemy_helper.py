@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Float, Integer, String, create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker, declarative_base
 
 from utils.FileHandler import FileHandler
 
@@ -8,7 +7,7 @@ Base = declarative_base()
 
 
 class TrainingData(Base):
-    __tablename__ = "   "
+    __tablename__ = "training_data"
     id = Column(Integer, primary_key=True, autoincrement=True)
     x = Column(Float)
     y1 = Column(Float)
