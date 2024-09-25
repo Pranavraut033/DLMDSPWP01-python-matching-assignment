@@ -13,20 +13,11 @@ class IdealFunctionError(Exception):
 #
 class IdealFunctionModel:
     """
-    IdealFunctionModel is a class that selects the ideal functions that best fit the training data based on the least square deviation.
+    IdealFunctionModel selects ideal functions that best fit the training data based on the least square deviation.
 
     Attributes:
-        session (Session): The database session used to query training data and ideal functions.
-        chosen_functions (List[str]): A list of chosen ideal function names.
-
-    Methods:
-        __init__(session: Session):
-            Initializes the IdealFunctionModel with a database session.
-
-        calculate_least_square_deviation(y_true: List[float], y_pred: List[float]) -> float:
-            Calculates the least square deviation between the true and predicted values.
-
-        select_ideal_functions() -> None:
+        session (Session): Database session for querying training data and ideal functions.
+        chosen_functions (List[str]): List of chosen ideal function names.
     """
 
     def __init__(self, session: Session):
@@ -38,13 +29,6 @@ class IdealFunctionModel:
     ) -> float:
         """
         Calculate the least square deviation between the true and predicted values.
-
-        Args:
-            y_true (List[float]): The list of true values.
-            y_pred (List[float]): The list of predicted values.
-
-        Returns:
-            float: The least square deviation.
         """
         return np.sum((np.array(y_true) - np.array(y_pred)) ** 2)
 
@@ -52,13 +36,7 @@ class IdealFunctionModel:
         """
         Selects the ideal functions that best fit the training data based on the least square deviation.
 
-        This method queries the training data and ideal functions from the database, calculates the least square
-        deviation for each combination of training and ideal function columns, and selects the ideal function
-        with the minimum deviation for each training column. The selected ideal functions are stored in the
-        `chosen_functions` attribute.
-
-        Raises:
-            IdealFunctionError: If there is an error during the selection process.
+        Queries training data and ideal functions from the database, calculates least square deviation for each combination, and selects the ideal function with the minimum deviation for each training column. Selected ideal functions are stored in `chosen_functions`.
         """
         training_data = self.session.query(TrainingData).all()
         ideal_functions = self.session.query(IdealFunctions).all()
@@ -88,10 +66,7 @@ class IdealFunctionModel:
     def process_test_data(self) -> None:
         """
         Processes the test data, matches each test point to the best fitting ideal function, and calculates deviations.
-
-        This method queries the test data from the database, matches each test data point with the closest ideal
-        function based on the calculated deviation, and stores the matched ideal function along with the deviation
-        in the database.
+        Queries test data from the database, matches each test point with the closest ideal function based on deviation, and stores the matched ideal function and deviation in the database.
         """
         test_data = self.session.query(TestData).all()
 
@@ -114,9 +89,7 @@ class IdealFunctionModel:
 
                 if deviation < min_deviation:
                     min_deviation = deviation
-                    best_function = self.chosen_functions[
-                        idx
-                    ]  # Add 1 to match ideal function numbering
+                    best_function = self.chosen_functions[idx]
 
             test_point.delta_y = min_deviation
             test_point.ideal_function = best_function
