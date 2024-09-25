@@ -32,30 +32,34 @@ class IdealFunctionModel:
         """
         return np.sum((np.array(y_true) - np.array(y_pred)) ** 2)
 
-    def select_ideal_functions(self) -> None:
+    def select_ideal_functions(self, ifunc_cols=50, td_cols=4) -> None:
         """
         Selects the ideal functions that best fit the training data based on the least square deviation.
 
         Queries training data and ideal functions from the database, calculates least square deviation for each combination, and selects the ideal function with the minimum deviation for each training column. Selected ideal functions are stored in `chosen_functions`.
         """
-        training_data = self.session.query(TrainingData).all()
-        ideal_functions = self.session.query(IdealFunctions).all()
 
         try:
+            training_data = self.session.query(TrainingData).all()
+            ideal_functions = self.session.query(IdealFunctions).all()
             training_y_columns: List[List[float]] = [
-                [getattr(td, f"y{i+1}") for td in training_data] for i in range(4)
+                [getattr(td, f"y{i+1}") for td in training_data] for i in range(td_cols)
             ]
 
             ideal_function_columns: List[List[float]] = [
                 [getattr(ifunc, f"y{j+1}") for ifunc in ideal_functions]
-                for j in range(50)
+                for j in range(ifunc_cols)
             ]
-
+            print(training_y_columns)
+            print(ideal_function_columns)
             for y_train in training_y_columns:
                 deviations: List[Tuple[int, float]] = []
 
                 for idx, y_ideal in enumerate(ideal_function_columns):
                     deviation = self.calculate_least_square_deviation(y_train, y_ideal)
+                    print(
+                        f"Deviation for y{idx+1}: {deviation}, y_train: {y_train}, y_ideal: {y_ideal}"
+                    )
                     deviations.append((idx + 1, deviation))
 
                 best_fit = min(deviations, key=lambda x: x[1])[0]
