@@ -1,0 +1,4 @@
+database_uri: 'sqlite:///data.db'
+training_data_path: 'src/data/train.csv'
+ideal_functions_path: 'src/data/ideal.csv'
+test_data_path: 'src/data/test.csv'

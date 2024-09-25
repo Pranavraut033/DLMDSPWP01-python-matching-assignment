@@ -1,0 +1,7 @@
+.ipynb_checkpoints
+__pycache__
+ect
+.pytest_cache
+.DS_Store
+main.html
+test_data_ideal_functions.html
